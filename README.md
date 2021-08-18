@@ -4,8 +4,7 @@ This repository contains example code to support the blog post [Add a H3 UDF to 
 
 We include code for the [AWS Lambda](https://aws.amazon.com/lambda/) function that powers the new Athena UDF. Also included is an example Jupyter Notebook which may be used in an [Amazon SageMaker Notbook Instance](https://docs.aws.amazon.com/sagemaker/latest/dg/nbi.html) to render a choropleth map.
 
-![Map](https://github.com/aws-samples/h3-udf-for-athena/blob/master/media/earthquake_map.png)
-
+![Map](./media/earthquake_map.png "Example map.")
 
 ### Security
 
