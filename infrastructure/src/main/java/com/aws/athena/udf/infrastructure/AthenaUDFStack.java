@@ -1,6 +1,5 @@
 package com.aws.athena.udf.h3.infrastructure;
 
-import java.util.Arrays;
 import java.util.List;
 
 import software.amazon.awscdk.core.BundlingOptions;
@@ -19,6 +18,8 @@ import software.amazon.awscdk.services.logs.RetentionDays;
 import static java.util.Collections.singletonList;
 import static software.amazon.awscdk.core.BundlingOutput.ARCHIVED;
 
+import java.util.Arrays;
+
 /** CDK Stack for H3 UDF. */
 public class AthenaUDFStack extends Stack {
     /** The memory size to be used by the lambda. */    
@@ -35,14 +36,14 @@ public class AthenaUDFStack extends Stack {
         super(scope, id, props);
 
         // The packaging command to create the jar file of the UDF
-        List<String> udfPackagingCommand = Arrays.asList(
+        final List<String> udfPkgCommand = Arrays.asList(
                 "/bin/sh",
                 "-c",
                 "mvn clean package " +
                 "&& cp /asset-input/target/aws-h3-athena-udf-1.0-SNAPSHOT.jar /asset-output/"
         );
-        BundlingOptions.Builder builderOptions = BundlingOptions.builder()
-                .command(udfPackagingCommand)
+        final BundlingOptions.Builder builderOptions = BundlingOptions.builder()
+                .command(udfPkgCommand)
                 .image(software.amazon.awscdk.services.lambda.Runtime.JAVA_11.getBundlingImage())
                 .volumes(singletonList(
                         // Mount local .m2 repo to avoid download all the dependencies again inside the container
@@ -56,11 +57,11 @@ public class AthenaUDFStack extends Stack {
 
 
         // Creates the UDF.
-        Function  udf = new Function(this, "H3AthenaHandler", FunctionProps.builder()
+        final Function  udf = new Function(this, "H3AthenaHandler", FunctionProps.builder()
                 .runtime(Runtime.JAVA_11)
                 .code(Code.fromAsset("../udf/", AssetOptions.builder()
                         .bundling(builderOptions
-                                .command(udfPackagingCommand)
+                                .command(udfPkgCommand)
                                 .build())
                         .build()))
                 .handler("com.aws.athena.udf.h3.H3AthenaHandler")
