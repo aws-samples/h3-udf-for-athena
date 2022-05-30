@@ -6,6 +6,10 @@ We include code for the [AWS Lambda](https://aws.amazon.com/lambda/) function th
 
 ![Map](./media/earthquake_map.png "Example map.")
 
+### How to use
+- Package the UDF by going to udf directory, and launch ``` mvn clean package ```.
+- Run ``` cdk deploy``` in the root directory of the repository.  
+
 ### Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
