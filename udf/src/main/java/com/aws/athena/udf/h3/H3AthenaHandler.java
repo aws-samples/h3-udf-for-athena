@@ -359,6 +359,10 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         return result;
     }
 
+    /** k-rings produces indices within k distance of the origin index.
+     *   @param origin the origin H3 index.
+     *   @param k the distance.
+     */
     public List<Long> kRing(Long origin, int k){
         final List<Long> result;
         if (origin == null){
@@ -370,6 +374,11 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
 
     }
 
+
+    /** k-rings produces indices within k distance of the origin H3 address.
+     *   @param origin the origin H3 address.
+     *   @param k the distance.
+     */
     public List<String> kRing(String origin, int k){
         final List<String> result;
         if (origin == null) {
@@ -399,7 +408,12 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         }
         return result;
     }
-
+    
+    /** hexRange produces indexes within k distance of the origin index. Output behavior is undefined when one of the indexes returned 
+     *  by this function is a pentagon or is in the pentagon distortion area.
+     *  @param h3 the h3 index.
+     *  @param k  the distance from the h3 index.
+     */
     public List<List<Long>> hexRange(Long h3, int k) throws PentagonEncounteredException{
         final List<List<Long>> result;
         if (h3 == null){
@@ -420,7 +434,10 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         return result;
     }
 
-
+    /** Produces the hollow hexagonal ring centered at origin with sides of length k.
+     *  @param h3 the h3 Index.
+     *  @param the length.
+     */
     public List<Long> hexRing(Long h3, int k) throws PentagonEncounteredException{
         final List<Long> result;
         if (h3 == null) {
@@ -431,6 +448,10 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         return result;
     }
 
+    /** Produces the hollow hexagonal ring centered at origin with sides of length k.
+     *  @param h3Address the h3 Address.
+     *  @param the length.
+     */
     public List<String> hexRing(String h3Address, int k) throws PentagonEncounteredException {
         final List<String> result;
         if (h3Address == null){
@@ -441,7 +462,10 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         return result;
     }
 
-
+    /** Given two H3 indexes, return the line of indexes between them (inclusive).
+     *   @param start the h3 index of start of the line.
+     *   @param end the h3 index of end of the line.
+     */
     public List<Long> h3Line(Long start, Long end)  {
         List<Long> result;
         if (start == null || end == null) {
@@ -456,6 +480,11 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         return result;
 
     }
+
+    /** Given two H3 indexes, return the line of indexes between them (inclusive).
+     *   @param start the h3 address of start of the line.
+     *   @param end the h3 address of end of the line.
+     */
     public List<String> h3Line(String startAddress, String endAddress) throws LineUndefinedException {
         List<String> result;
         if (startAddress == null || endAddress == null) {
