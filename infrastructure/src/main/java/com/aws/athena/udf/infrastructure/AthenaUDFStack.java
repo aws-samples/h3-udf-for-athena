@@ -19,7 +19,14 @@ import software.amazon.awscdk.services.logs.RetentionDays;
 import static java.util.Collections.singletonList;
 import static software.amazon.awscdk.core.BundlingOutput.ARCHIVED;
 
+/** CDK Stack for H3 UDF. */
 public class AthenaUDFStack extends Stack {
+    /** The memory size to be used by the lambda. */    
+    private static final int MEMORY_SIZE = 4096;
+
+    /** The timeout of lambda execution. */
+    private static final int TIMEOUT = 30;
+
     public AthenaUDFStack(final Construct scope, final String id) {
         this(scope, id, null);
     }
@@ -27,14 +34,13 @@ public class AthenaUDFStack extends Stack {
     public AthenaUDFStack(final Construct scope, final String id, final StackProps props) {
         super(scope, id, props);
 
+        // The packaging command to create the jar file of the UDF
         List<String> udfPackagingCommand = Arrays.asList(
                 "/bin/sh",
                 "-c",
                 "mvn clean package " +
                 "&& cp /asset-input/target/aws-h3-athena-udf-1.0-SNAPSHOT.jar /asset-output/"
         );
-
-
         BundlingOptions.Builder builderOptions = BundlingOptions.builder()
                 .command(udfPackagingCommand)
                 .image(software.amazon.awscdk.services.lambda.Runtime.JAVA_11.getBundlingImage())
@@ -48,6 +54,8 @@ public class AthenaUDFStack extends Stack {
                 .user("root")
                 .outputType(ARCHIVED);
 
+
+        // Creates the UDF.
         Function  udf = new Function(this, "H3AthenaHandler", FunctionProps.builder()
                 .runtime(Runtime.JAVA_11)
                 .code(Code.fromAsset("../udf/", AssetOptions.builder()
@@ -56,8 +64,8 @@ public class AthenaUDFStack extends Stack {
                                 .build())
                         .build()))
                 .handler("com.aws.athena.udf.h3.H3AthenaHandler")
-                .memorySize(4096)
-                .timeout(Duration.seconds(30))
+                .memorySize(MEMORY_SIZE)
+                .timeout(Duration.seconds(TIMEOUT))
                 .logRetention(RetentionDays.ONE_WEEK)
                 .build());
     }
