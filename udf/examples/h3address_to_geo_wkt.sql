@@ -1,0 +1,6 @@
+USING EXTERNAL FUNCTION h3_to_geo_wkt(h3Address VARCHAR) 
+RETURNS VARCHAR
+LAMBDA '<ARN>'
+SELECT ST_GeometryFromText(h3_to_geo_wkt('8a3969ab2037fff'))
+
+-- POINT (7.017036 43.5528)
