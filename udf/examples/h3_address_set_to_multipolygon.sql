@@ -1,0 +1,30 @@
+USING EXTERNAL FUNCTION h3_address_set_to_multipolygon(h3array ARRAY(VARCHAR), geojson BOOLEAN)
+RETURNS VARCHAR
+LAMBDA 'arn:aws:lambda:<region>:<account>:function:<functionname>'
+SELECT ST_GeometryFromText(h3_address_set_to_multipolygon( 
+ ARRAY['883960185bfffff',
+ '8839601a81fffff',
+ '8839601a85fffff',
+ '8839601a87fffff',
+ '8839601a89fffff',
+ '8839601a8dfffff',
+ '8839601aa1fffff',
+ '8839601aa9fffff',
+ '8839601aabfffff',
+ '8839601aadfffff',
+ '8839601ac5fffff',
+ '8839601ac7fffff',
+ '8839601ae1fffff',
+ '8839601ae3fffff',
+ '8839601ae5fffff',
+ '8839601ae7fffff',
+ '8839601ae9fffff',
+ '8839601aebfffff',
+ '8839601aedfffff',
+ '883969ab21fffff',
+ '883969ab23fffff',
+ '883969ab25fffff',
+ '883969ab27fffff',
+ '883969ab29fffff',
+ '883969ab2bfffff',
+ '883969ab2dfffff'], TRUE))
