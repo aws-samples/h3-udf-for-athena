@@ -1,0 +1,4 @@
+USING EXTERNAL FUNCTION h3_is_valid(h3Address VARCHAR) 
+RETURNS BOOLEAN
+LAMBDA '<ARN>'
+SELECT h3_is_valid('2'), h3_is_valid('8a3969ab2037fff')

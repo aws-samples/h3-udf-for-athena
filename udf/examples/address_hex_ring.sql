@@ -1,0 +1,4 @@
+USING EXTERNAL FUNCTION hex_ring(origin VARCHAR, k INT) 
+RETURNS ARRAY(VARCHAR) 
+LAMBDA '<ARN>'
+SELECT hex_ring('8a3969ab2037fff', 1) AS hexring
