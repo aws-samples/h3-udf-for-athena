@@ -12,7 +12,7 @@ public class DeployApp {
     public static void main(final String[] args) {
         final App app = new App();
 
-        new AthenaUDFStack(app, "AthenaUDFStack", StackProps.builder()
+        new AthenaUDFStack(app, "H3AthenaUDF", StackProps.builder()
                 .env(Environment.builder().build())
                 .build());
 
