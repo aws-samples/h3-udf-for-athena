@@ -1040,7 +1040,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
     }
 
     private static String pointsListStr(GeoCoord geoCoord, String sep) {
-        return String.format("%f%s%f", geoCoord.lng, sep, geoCoord.lat);
+        return String.format("%f%s%f", geoCoord.lat, sep, geoCoord.lng);
     }
 
 
@@ -1049,7 +1049,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
     }
 
     private static String wktPoint(GeoCoord geoCoord) {
-        return String.format("POINT (%f %f)", geoCoord.lng, geoCoord.lat);
+        return String.format("POINT (%f %f)", geoCoord.lat, geoCoord.lng);
     }
 
     private static GeoCoord geoCoordFromWKTPoint(String wktPoint) {
