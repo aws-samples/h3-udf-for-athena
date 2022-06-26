@@ -1,0 +1,4 @@
+USING EXTERNAL FUNCTION exact_edge_length(edge BIGINT, unit VARCHAR) 
+RETURNS DOUBLE
+LAMBDA '<ARN>'
+SELECT exact_edge_length(1248507113102114815, 'rads')

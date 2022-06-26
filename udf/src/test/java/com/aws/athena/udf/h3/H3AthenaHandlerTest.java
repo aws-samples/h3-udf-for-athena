@@ -1,12 +1,17 @@
 package com.aws.athena.udf.h3;
 
+import com.uber.h3core.util.GeoCoord;
+import com.uber.h3core.LengthUnit;
+
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import java.io.IOException;
 import com.uber.h3core.H3Core;
-import java.util.Random;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 /**
  * Unit test for simple App.
  */
@@ -108,7 +113,7 @@ public class H3AthenaHandlerTest
     public void testh3_to_geo() {
         assertNull(handler.h3_to_geo((Long)null));
 
-        Random r = new Random();
+        final Random r = new Random();
 
         for (int i=0; i < 1000; ++i) {
             double latitude = (Math.random() * 180.0) - 90.0;
@@ -118,9 +123,9 @@ public class H3AthenaHandlerTest
 
 
             // The centroid geo returns by a centroid is the centroid itself.
-            Long h3 = handler.geo_to_h3(latitude, longitude, res);
-            List<Double> geo = handler.h3_to_geo(h3);
-            Long centroid = handler.geo_to_h3(geo.get(0), geo.get(1), res);
+            final Long h3 = handler.geo_to_h3(latitude, longitude, res);
+            final List<Double> geo = handler.h3_to_geo(h3);
+            final Long centroid = handler.geo_to_h3(geo.get(0), geo.get(1), res);
  
             assertEquals(handler.h3_to_geo(centroid), geo);
         }
@@ -129,9 +134,9 @@ public class H3AthenaHandlerTest
     public void testh3_to_geo_wkt() {
         assertNull(handler.h3_to_geo_wkt((Long)null));
 
-        double latitude = 50.0;
-        double longitude = -43;
-        Long h3 = handler.geo_to_h3(latitude, longitude, 4);
+        final double latitude = 50.0;
+        final double longitude = -43;
+        final Long h3 = handler.geo_to_h3(latitude, longitude, 4);
 
 
         assertEquals(handler.h3_to_geo_wkt(h3), "POINT (50.166306 -42.941921)");
@@ -142,22 +147,121 @@ public class H3AthenaHandlerTest
 
         assertNull(handler.h3_to_geo_boundary((Long)null, ","));
         
-        double latitude = 50.0;
-        double longitude = -43;
-        Long h3 = handler.geo_to_h3(latitude, longitude, 4);
+        final double latitude = 50.0;
+        final double longitude = -43;
+        final Long h3 = handler.geo_to_h3(latitude, longitude, 4);
 
         for (int i = 0; i < 6; ++i) {
             
             String[] splittedResult = handler.h3_to_geo_boundary(h3, ",").get(i).split(",");
             
-            System.out.println(handler.h3_to_geo_boundary(h3, ",").get(i));
-            System.out.println(h3Core.h3ToGeoBoundary(h3).get(i).lat);
-            System.out.println(h3Core.h3ToGeoBoundary(h3).get(i).lng);
-
-
             assertEquals(h3Core.h3ToGeoBoundary(h3).get(i).lat , Double.parseDouble(splittedResult[0]), 1e-4);
             assertEquals(h3Core.h3ToGeoBoundary(h3).get(i).lng , Double.parseDouble(splittedResult[1]), 1e-4);
         }       
     }
+
+    public void testpoint_dist() {
+        final double distance1 = handler.point_dist("POINT (43.552847 7.017369)","POINT (47.218371 -1.55362)", "rads" );
+        final double distance2 = handler.point_dist("POINT(43.552847 7.017369)","POINT (47.218371 -1.55362)", "rads" );
+
+
+        assertEquals(h3Core.pointDist(
+                                new GeoCoord(43.552847, 7.017369), 
+                                new GeoCoord(47.218371,-1.55362), 
+                                LengthUnit.valueOf("rads")),
+                      distance1,
+                      1e-3);
+        assertEquals(distance2, distance1, 1e-3);
+
+    }
+
+    public void testpolyfill() {
+        final String polygonWKT = "POLYGON((43.604652 1.444209, 47.218371 -1.553621, 50.62925 3.05726, 48.864716 2.349014, 43.6961 7.27178, 43.604652 1.444209))";
+        final List<GeoCoord> geoCoordPoints = List.of(new GeoCoord(43.604652,1.444209),
+                                                      new GeoCoord(47.218371, -1.553621),
+                                                      new GeoCoord(50.62925, 3.05726),
+                                                      new GeoCoord(48.864716, 2.349014),
+                                                      new GeoCoord(43.6961, 7.27178),
+                                                      new GeoCoord(43.604652, 1.444209));
+        final String polygonWKTAlt = "POLYGON  ((43.604652 1.444209, 47.218371 -1.553621, 50.62925 3.05726, 48.864716 2.349014, 43.6961 7.27178, 43.604652 1.444209))";
+
+        final List<List<GeoCoord>>  empty = new LinkedList<>();
+
+        for (int i = 0; i <= 5 ;++i) {
+            assertEquals(h3Core.polyfill(geoCoordPoints, empty, i), handler.polyfill(polygonWKT, i));
+            assertEquals(handler.polyfill(polygonWKT, i), handler.polyfill(polygonWKTAlt, i));
+
+        }
+    }
+
+    public void testpolyfill_address() {
+        final String polygonWKT = "POLYGON((43.604652 1.444209, 47.218371 -1.553621, 50.62925 3.05726, 48.864716 2.349014, 43.6961 7.27178, 43.604652 1.444209))";
+        final List<GeoCoord> geoCoordPoints = List.of(new GeoCoord(43.604652,1.444209),
+                                                      new GeoCoord(47.218371, -1.553621),
+                                                      new GeoCoord(50.62925, 3.05726),
+                                                      new GeoCoord(48.864716, 2.349014),
+                                                      new GeoCoord(43.6961, 7.27178),
+                                                      new GeoCoord(43.604652, 1.444209));
+        final String polygonWKTAlt = "POLYGON ((43.604652 1.444209, 47.218371 -1.553621, 50.62925 3.05726, 48.864716 2.349014, 43.6961 7.27178, 43.604652 1.444209))";
+
+        final List<List<GeoCoord>>  empty = new LinkedList<>();
+
+        for (int i = 0; i <= 5 ;++i) {
+            assertEquals(h3Core.polyfillAddress(geoCoordPoints, empty, i), handler.polyfill_address(polygonWKT, i));
+            assertEquals(handler.polyfill_address(polygonWKT, i), handler.polyfill_address(polygonWKTAlt, i));
+
+        }
+    }
+
+    public void testh3_set_to_multipolygon() {
+        final List<Long> h3_indexes = List.of( 613498908116516863L,
+                                               613499565410091007L,
+                                               613498908185722879L,
+                                               613499565420576767L,
+                                               613498908183625727L,
+                                               613499565418479615L,
+                                               613498908145876991L,
+                                               613498908223471615L,
+                                               613498907535605759L,
+                                               613498908120711167L,
+                                               613498908124905471L,
+                                               613498908217180159L,
+                                               613498908112322559L,
+                                               613498908156362751L,
+                                               613498908215083007L,
+                                               613498908221374463L,
+                                               613498908118614015L,
+                                               613498908212985855L,
+                                               613498908154265599L,
+                                               613499565414285311L,
+                                               613499565412188159L,
+                                               613498908158459903L,
+                                               613499565416382463L,
+                                               613498908225568767L,
+                                               613498908219277311L,
+                                               613499565422673919L );
+        List<List<List<GeoCoord>>> polygon1 = h3Core.h3SetToMultiPolygon(h3_indexes, true);
+        String polygon2 = handler.h3_set_to_multipolygon(h3_indexes, true);
+        String polygon2Split[] = polygon2.substring("MULTIPOLYGON (((".length(), polygon2.length() - 3).split("\\)\\), \\(\\(");
+
+        assertEquals(polygon2Split.length, polygon1.size());
+
+        for (int i = 0; i < polygon2Split.length; ++i) {
+            String[] splitted = polygon2Split[i].split(",");
+            assertEquals(splitted.length, polygon1.get(i).get(0).size());
+
+            for (int j = 0; j < splitted.length ;  ++j) {
+                String[] latlng = splitted[j].trim().split(" ");
+                assertEquals(Double.parseDouble(latlng[0]), polygon1.get(i).get(0).get(j).lat, 1e-3);
+                assertEquals(Double.parseDouble(latlng[1]), polygon1.get(i).get(0).get(j).lng, 1e-3);
+
+            }
+
+        }
+        assertEquals(polygon2Split.length, polygon1.size());
+        assertEquals(2, polygon2Split.length);
+        
+    }
+
 
 }

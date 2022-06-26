@@ -21,9 +21,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
+/** Lambda that hosts H3 UDFs */
 public class H3AthenaHandler extends UserDefinedFunctionHandler {
 
     private final H3Core h3Core;
+
     private static final String SOURCE_TYPE = "h3_athena_udf_handler";
 
     public H3AthenaHandler() throws IOException {
@@ -308,13 +310,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
      * @throws IllegalArgumentException when index is out of range.
      */
     public Integer h3_get_base_cell(String h3Address){
-        final Integer result;
-        if (h3Address == null) {
-            result = null;
-        } else {
-            result =  h3Core.h3GetBaseCell(h3Address);
-        }
-        return result;
+        return (h3Address == null) ? null : h3Core.h3GetBaseCell(h3Address);
     }
 
     /** Converts the string representation to H3Index (uint64_t) representation.
@@ -421,18 +417,13 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         return result;
     }
 
-    /** k-rings produces indices within k distance of the origin index.
+    /** k-ring produces indices within k distance of the origin index.
      *   @param origin the origin H3 index.
      *   @param k the distance.
+     *   @return the h3 indexes inside the ring.
      */
     public List<Long> k_ring(Long origin, Integer k){
-        final List<Long> result;
-        if (origin == null || k == null){
-            result = null;
-        } else {
-            result = h3Core.kRing(origin, k);
-        }
-        return result;
+        return (origin == null || k == null)? null : h3Core.kRing(origin, k);
 
     }
 
@@ -440,50 +431,36 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
     /** k-rings produces indices within k distance of the origin H3 address.
      *   @param origin the origin H3 address.
      *   @param k the distance.
+     *   @param the addresses inside the ring.
      */
     public List<String> k_ring(String origin, Integer k){
-        final List<String> result;
-        if (origin == null) {
-            result =  null;
-        } else {
-            result =  h3Core.kRing(origin, k);
-        }
-        return result;
+        return (origin == null || k == null) ? null : h3Core.kRing(origin, k);
     }
 
     
     /** Produces the hollow hexagonal ring centered at origin with sides of length k.
      *  @param h3 the h3 Index.
      *  @param the length.
+     *  @return the h3 indexes inside the ring.
      */
     public List<Long> hex_ring(Long h3, Integer k) throws PentagonEncounteredException{
-        final List<Long> result;
-        if (h3 == null) {
-            result = null;
-        } else {
-            result = h3Core.hexRing(h3, k);
-        }
-        return result;
+        return (h3 == null || k == null) ? null :h3Core.hexRing(h3, k);
     }
 
     /** Produces the hollow hexagonal ring centered at origin with sides of length k.
      *  @param h3Address the h3 Address.
      *  @param the length.
+     *  @return the h3 addresses inside the ring.
      */
     public List<String> hex_ring(String h3Address, Integer k) throws PentagonEncounteredException {
-        final List<String> result;
-        if (h3Address == null){
-            result = null;
-        } else {
-            result =  h3Core.hexRing(h3Address, k);
-        }
-        return result;
+        return  (h3Address == null || k == null) ? null :  h3Core.hexRing(h3Address, k);
     }
 
     /** Given two H3 indexes, return the line of indexes between them (inclusive).
      *   @param start the h3 index of start of the line.
      *   @param end the h3 index of end of the line.
-     */
+     *   @return the h3 indexes. 
+     */  
     public List<Long> h3_line(Long start, Long end)  {
         List<Long> result;
         if (start == null || end == null) {
@@ -502,6 +479,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
     /** Given two H3 indexes, return the line of indexes between them (inclusive).
      *   @param start the h3 address of start of the line.
      *   @param end the h3 address of end of the line.
+     *   @return the h3 addresses 
      */
     public List<String> h3_line(String startAddress, String endAddress) throws LineUndefinedException {
         List<String> result;
@@ -670,9 +648,12 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
 
         if (polygonWKT != null && res != null) {
             final String trimmed = polygonWKT.trim();
-            if (trimmed.startsWith("POLYGON ((") && trimmed.endsWith("))")) {
+            if (trimmed.startsWith("POLYGON") && trimmed.endsWith("))")) {
+
+                String strippedPolygon  = trimmed.substring("POLYGON".length()).trim();
+
                 
-                for (String coordinates:trimmed.substring("POLYGON ((".length(), trimmed.length() - 2).split(",")) {
+                for (String coordinates:strippedPolygon.substring(2, strippedPolygon.length() - 2).split(",")) {
                     
                     final String[] splitCoordinates = coordinates.trim().split("\\s+");
 
@@ -706,8 +687,11 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
 
         if (polygonWKT != null && res != null) {
             String trimmed = polygonWKT.trim();
-            if (trimmed.startsWith("POLYGON ((") && trimmed.endsWith("))")) {
-                for (String coordinates:trimmed.substring("POLYGON ((".length(), trimmed.length() - 2).split(",")) {
+            if (trimmed.startsWith("POLYGON") && trimmed.endsWith("))")) {
+                String strippedPolygon  = trimmed.substring("POLYGON".length()).trim();
+
+                for (String coordinates:strippedPolygon.substring(2, strippedPolygon.length() - 2).split(",")) {
+
                     String[] splitCoordinates = coordinates.trim().split("\\s+");
 
                     geoCoordPoints.add(new GeoCoord(Double.parseDouble(splitCoordinates[0]), Double.parseDouble(splitCoordinates[1])));
@@ -960,40 +944,64 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
     }
 
 
-    /** Exact area of specific cell */
+    /** Exact area of specific cell 
+     *  @param h3 h3 Index
+     *  @param unit the unit, km2 for km square, or m2 for meter square, rads2 for radians square.
+     *  @return the area
+     * 
+     */
     public Double cell_area(Long h3, String unit) {
-        final Double result;
-        if (h3 == null) {
-            result = null;
-        } else {
-            result =  h3Core.cellArea(h3, AreaUnit.valueOf(unit));
-        }
-        return result;
+        return (h3 == null) ? null : h3Core.cellArea(h3, AreaUnit.valueOf(unit));
     }
 
+    /** Exact area of specific cell 
+     *  @param h3 h3 Index
+     *  @param unit the unit, km2 for km square, or m2 for meter square.
+     *  @return the area
+     * 
+     */
     public Double cell_area(String h3Address, String unit) {
-        final Double result;
-        if (h3Address == null) {
-            result =  null;
-        } else {
-            result =  h3Core.cellArea(h3Address, AreaUnit.valueOf(unit));
-        }
-        return result;
+        return (h3Address == null) ? null: h3Core.cellArea(h3Address, AreaUnit.valueOf(unit));
     }
 
-    /** Average hexagon edge length  at the given resolution. */
-    public double edge_length(int res, String unit){
-        return h3Core.edgeLength(res, LengthUnit.valueOf(unit));
+    /** Average hexagon edge length  at a given resolution.
+     *  @param res the resolution
+     *  @param unit the unit, km or m.
+     *  @return the length of the edge. 
+     *  
+     */
+    public Double edge_length(Integer res, String unit){
+        return (res == null || unit == null)? null : h3Core.edgeLength(res, LengthUnit.valueOf(unit));
     }
 
-    /** Exact edge length of specific unidirectional edge in kilometers. */
+    /** Exact edge length of specific unidirectional edge.  
+     *  @param h3 an h3 index.
+     *  @param unit the unit, km, m, or rads.
+     *  @return the length of the edge
+     * 
+     */
     public Double exact_edge_length(Long h3, String unit){
         final Double result;
-        if (h3 == null){
+        if (h3 == null || unit == null){
             result = null;
         } else {
-
             result =  h3Core.exactEdgeLength(h3, LengthUnit.valueOf(unit));
+        }
+        return result;
+    }
+
+    /** Exact edge length of specific unidirectional edge.  
+     *  @param h3 an h3 index.
+     *  @param unit the unit, km or m.
+     *  @return the length of the edge
+     * 
+     */
+    public Double exact_edge_length(String edge_address, String unit){
+        final Double result;
+        if (edge_address == null || unit == null){
+            result = null;
+        } else {
+            result =  h3Core.exactEdgeLength(edge_address, LengthUnit.valueOf(unit));
         }
         return result;
     }
@@ -1003,13 +1011,23 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
      * @return the number of hexagons at a given resolution.
      */
     public Long num_hexagons(Integer res){
-        return h3Core.numHexagons(res);
+        return (res == null)? null : h3Core.numHexagons(res);
     }
 
-    public List<Long> getRes0Indexes(int res){
+
+    /** Returns all the resolution 0 h3 indexes.
+     *  @param dummy a dummy parameter, ignored.
+     *  @return the indexes.
+     */
+    public List<Long> get_res0_indexes(Integer dummy){
         return new ArrayList<Long>(h3Core.getRes0Indexes());
     }
-    public List<String> getRes0IndexesAddresses(int res){
+
+    /** Returns all the resolution 0 h3 indexes.
+     *  @param dummy a dummy parameter, ignored.
+     *  @return the indexes.
+     */
+    public List<String> get_res0_indexes_addresses(String dummy){
         return new ArrayList<String>(h3Core.getRes0IndexesAddresses());
     }
 
@@ -1029,8 +1047,16 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         return res == null ? null : new ArrayList<String>(h3Core.getPentagonIndexesAddresses(res));
     }
 
-    public double pointDist(String point1, String point2, String unit){
-        return h3Core.pointDist(geoCoordFromWKTPoint(point1), geoCoordFromWKTPoint(point2), LengthUnit.valueOf(unit));
+    /** Gives the "great circle" or "haversine" distance between pairs of GeoCoord points (lat/lng pairs) in kilometers.
+     *  @param point1 wkt Point of the first point.
+     *  @param point2 wkt point of the second point.
+     *  @param unit the unit, km, m, or rads.
+     *  @return the distance.
+     */
+    public Double point_dist(String point1, String point2, String unit){
+        return h3Core.pointDist(geoCoordFromWKTPoint(point1), 
+                                geoCoordFromWKTPoint(point2), 
+                                LengthUnit.valueOf(unit));
     }
 
     private static String pointsListStr(GeoCoord geoCoord, String sep) {
@@ -1050,7 +1076,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         
         final String trimmed = wktPoint.trim();
         if (trimmed.startsWith("POINT")) {
-            final String inParentheses = trimmed.substring(5, trimmed.length());
+            final String inParentheses = trimmed.substring(5, trimmed.length()).trim();
             if ( inParentheses.charAt(0) == '(' && inParentheses.charAt(inParentheses.length()-1) == ')' ){
                 final String[] splitted = inParentheses.substring(1, inParentheses.length()-1).split("\\s+");
                 return new GeoCoord(Double.parseDouble(splitted[0]), Double.parseDouble(splitted[1]));
