@@ -18,7 +18,6 @@
    <rule ref="category/java/bestpractices.xml/ArrayIsStoredDirectly" />
    <rule ref="category/java/bestpractices.xml/AvoidMessageDigestField" />
    <rule ref="category/java/bestpractices.xml/AvoidPrintStackTrace" />
-   <rule ref="category/java/bestpractices.xml/AvoidReassigningCatchVariables" />
    <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters" />
    <rule ref="category/java/bestpractices.xml/AvoidStringBufferField" />
    <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP" />
@@ -29,24 +28,20 @@
    <rule ref="category/java/bestpractices.xml/ForLoopCanBeForeach" />
    <rule ref="category/java/bestpractices.xml/ForLoopVariableCount" />
    <rule ref="category/java/bestpractices.xml/GuardLogStatement" />
-   <rule ref="category/java/bestpractices.xml/LiteralsFirstInComparisons" />
    <rule ref="category/java/bestpractices.xml/LooseCoupling" />
    <rule ref="category/java/bestpractices.xml/MethodReturnsInternalArray" />
    <rule ref="category/java/bestpractices.xml/MissingOverride" />
    <rule ref="category/java/bestpractices.xml/OneDeclarationPerLine" />
    <rule ref="category/java/bestpractices.xml/PreserveStackTrace" />
-   <rule ref="category/java/bestpractices.xml/PrimitiveWrapperInstantiation" />
    <rule ref="category/java/bestpractices.xml/ReplaceEnumerationWithIterator" />
    <rule ref="category/java/bestpractices.xml/ReplaceHashtableWithMap" />
    <rule ref="category/java/bestpractices.xml/ReplaceVectorWithList" />
    <rule ref="category/java/bestpractices.xml/SwitchStmtsShouldHaveDefault" />
    <rule ref="category/java/bestpractices.xml/SystemPrintln" />
-   <rule ref="category/java/bestpractices.xml/UnusedAssignment" />
    <rule ref="category/java/bestpractices.xml/UnusedFormalParameter" />
    <rule ref="category/java/bestpractices.xml/UnusedPrivateField" />
    <rule ref="category/java/bestpractices.xml/UnusedPrivateMethod" />
    <rule ref="category/java/bestpractices.xml/UseCollectionIsEmpty" />
-   <rule ref="category/java/bestpractices.xml/UseStandardCharsets" />
    <rule ref="category/java/bestpractices.xml/UseTryWithResources" />
    <rule ref="category/java/bestpractices.xml/UseVarargs" />
    <rule ref="category/java/bestpractices.xml/WhileLoopWithLiteralBoolean" />
@@ -69,7 +64,6 @@
   <rule ref="category/java/codestyle.xml/CommentDefaultAccessModifier" />
   <rule ref="category/java/codestyle.xml/ConfusingTernary" />
   <rule ref="category/java/codestyle.xml/ControlStatementBraces" />
-  <rule ref="category/java/codestyle.xml/EmptyControlStatement" />
   <rule ref="category/java/codestyle.xml/EmptyMethodInAbstractClassShouldBeAbstract" />
   <rule ref="category/java/codestyle.xml/ExtendsObject" />
   <rule ref="category/java/codestyle.xml/FieldDeclarationsShouldBeAtStartOfClass" />
@@ -84,7 +78,6 @@
         <property name="exclusions" value="serialVersionUID|serialPersistentFields" />
     </properties>
   </rule>
-  <rule ref="category/java/codestyle.xml/FinalParameterInAbstractMethod" />
   <rule ref="category/java/codestyle.xml/ForLoopShouldBeWhileLoop" />
   <rule ref="category/java/codestyle.xml/FormalParameterNamingConventions" />
   <rule ref="category/java/codestyle.xml/GenericsNaming" />
@@ -113,12 +106,9 @@
   </rule>
   <rule ref="category/java/codestyle.xml/MethodNamingConventions">
     <properties>
-        <property name="methodPattern" value="[a-z][a-zA-Z0-9]*" />
-        <property name="staticPattern" value="[a-z][a-zA-Z0-9]*" />
-        <property name="nativePattern" value="[a-z][a-zA-Z0-9]*" />
-        <property name="junit3TestPattern" value="test[A-Z0-9][a-zA-Z0-9]*" />
-        <property name="junit4TestPattern" value="[a-z][a-zA-Z0-9]*" />
-        <property name="junit5TestPattern" value="[a-z][a-zA-Z0-9]*" />
+        <property name="methodPattern" value="[a-z][_a-zA-Z0-9]*" />
+        <property name="staticPattern" value="[a-z][_a-zA-Z0-9]*" />
+        <property name="nativePattern" value="[a-z][_a-zA-Z0-9]*" />
     </properties>
   </rule>
   <rule ref="category/java/codestyle.xml/NoPackage" />
@@ -128,15 +118,12 @@
   <rule ref="category/java/codestyle.xml/ShortClassName" />
   <rule ref="category/java/codestyle.xml/ShortMethodName" />
   <rule ref="category/java/codestyle.xml/TooManyStaticImports" />
-  <rule ref="category/java/codestyle.xml/UnnecessaryCast" />
   <rule ref="category/java/codestyle.xml/UnnecessaryConstructor" />
   <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName" />
-  <rule ref="category/java/codestyle.xml/UnnecessaryImport" />
   <rule ref="category/java/codestyle.xml/UnnecessaryLocalBeforeReturn" />
   <rule ref="category/java/codestyle.xml/UnnecessaryModifier" />
 
   <rule ref="category/java/codestyle.xml/UnnecessaryReturn" />
-  <rule ref="category/java/codestyle.xml/UnnecessarySemicolon" />
   <rule ref="category/java/codestyle.xml/UseDiamondOperator" />
   <rule ref="category/java/codestyle.xml/UselessParentheses" />
   <rule ref="category/java/codestyle.xml/UselessQualifiedThis" />
@@ -150,7 +137,6 @@
   <rule ref="category/java/design.xml/AvoidThrowingRawExceptionTypes" />
   <rule ref="category/java/design.xml/AvoidUncheckedExceptionsInSignatures" /> 
   <rule ref="category/java/design.xml/ClassWithOnlyPrivateConstructorsShouldBeFinal" />
-  <rule ref="category/java/design.xml/CognitiveComplexity" />
   <rule ref="category/java/design.xml/CollapsibleIfStatements" />
   <rule ref="category/java/design.xml/CouplingBetweenObjects" />
   <rule ref="category/java/design.xml/DataClass" />
@@ -158,7 +144,7 @@
   <rule ref="category/java/design.xml/ExceptionAsFlowControl" />
   <rule ref="category/java/design.xml/ExcessiveClassLength">
     <properties>
-        <property name="minimum" value="1000.0" />
+        <property name="minimum" value="2000.0" />
     </properties>
   </rule>
   <rule ref="category/java/design.xml/ExcessiveImports" />
@@ -201,7 +187,6 @@
   <rule ref="category/java/errorprone.xml/CloneMethodReturnTypeMustMatchClassName" />
   <rule ref="category/java/errorprone.xml/CloseResource" />
   <rule ref="category/java/errorprone.xml/CompareObjectsWithEquals" />
-  <rule ref="category/java/errorprone.xml/ComparisonWithNaN" />
   <rule ref="category/java/errorprone.xml/ConstructorCallsOverridableMethod" />
   <rule ref="category/java/errorprone.xml/EmptyStatementNotInLoop" />
   <rule ref="category/java/errorprone.xml/EqualsNull" />
@@ -215,7 +200,6 @@
   <rule ref="category/java/errorprone.xml/NonCaseLabelInSwitchStatement" />
   <rule ref="category/java/errorprone.xml/OverrideBothEqualsAndHashcode" />
   <rule ref="category/java/errorprone.xml/ProperCloneImplementation" />
-  <rule ref="category/java/errorprone.xml/ReturnEmptyCollectionRatherThanNull" />
   <rule ref="category/java/errorprone.xml/ReturnFromFinallyBlock" />
   <rule ref="category/java/errorprone.xml/UnconditionalIfStatement" />
   <rule ref="category/java/errorprone.xml/UnnecessaryBooleanAssertion" />
