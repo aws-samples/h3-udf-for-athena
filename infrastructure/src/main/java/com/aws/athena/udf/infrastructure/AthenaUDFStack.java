@@ -45,7 +45,7 @@ public class AthenaUDFStack extends Stack {
         );
         final BundlingOptions.Builder builderOptions = BundlingOptions.builder()
                 .command(udfPkgCommand)
-                .image(software.amazon.awscdk.services.lambda.Runtime.JAVA_8.getBundlingImage())
+                .image(software.amazon.awscdk.services.lambda.Runtime.JAVA_11.getBundlingImage())
                 .volumes(singletonList(
                         // Mount local .m2 repo to avoid download all the dependencies again inside the container
                         DockerVolume.builder()
@@ -59,7 +59,7 @@ public class AthenaUDFStack extends Stack {
 
         // Creates the UDF.
         final Function  udf = new Function(this, "H3AthenaHandler", FunctionProps.builder()
-                .runtime(Runtime.JAVA_8)
+                .runtime(Runtime.JAVA_11)
                 .code(Code.fromAsset("../", AssetOptions.builder()
                         .bundling(builderOptions
                                 .command(udfPkgCommand)

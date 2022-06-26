@@ -824,13 +824,8 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
     /** Returns a unidirectional edge H3 index based on the provided origin and destination.
      */
     public Long get_h3_unidirectional_edge(Long origin, Long destination) {
-        final Long result;
-        if (origin == null || destination == null ){
-            result = null;
-        } else {
-            result =  h3Core.getH3UnidirectionalEdge(origin, destination);
-        }
-        return result;
+        return (origin == null || destination == null ) ? null : 
+            h3Core.getH3UnidirectionalEdge(origin, destination);
     }
 
     /** Returns a unidirectional edge H3 index based on the provided origin and destination.
@@ -854,46 +849,35 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
 
 
     /** Determines if the provided H3 edge address is a valid unidirectional edge index.
-
+     * @param edgeAddress the edge address
+     *
      */
     public Boolean h3_unidirectional_edge_is_valid(String edgeAddress){
         return edgeAddress != null && h3Core.h3UnidirectionalEdgeIsValid(edgeAddress);      
     }
 
     /** Returns the origin hexagon from the unidirectional edge H3Index.
-
+    * @param edge the edge ID
+    * @return the h3 index of the origin of the edge.
     */
     public Long get_origin_h3_index_from_unidirectional_edge(Long edge){
-        final Long result;
-        if (edge == null) {
-            result = null;
-        } else {
-            result = h3Core.getOriginH3IndexFromUnidirectionalEdge(edge);
-        }
-        return result;
+        return (edge == null)  ? null : h3Core.getOriginH3IndexFromUnidirectionalEdge(edge); 
     }
 
-    /** Returns the origin hexagon from the unidirectional edge H3Index. */
+    /** Returns the origin hexagon from the unidirectional edge H3Index. 
+     *  @param edgeAddress the edge address.
+     *  @return the h3 address of  the origin of the edge
+     */
     public String get_origin_h3_index_from_unidirectional_edge(String edgeAddress){
-        final String result;
-        if (edgeAddress == null){
-            result = null;
-        } else {
-            result =  h3Core.getOriginH3IndexFromUnidirectionalEdge(edgeAddress);
-        }
-        return result;
+        return (edgeAddress == null) ? null : h3Core.getOriginH3IndexFromUnidirectionalEdge(edgeAddress);
     }
 
     /** Returns the destination hexagon from the unidirectional edge H3Index. */
     public Long get_destination_h3_index_from_unidirectional_edge(Long edge){
-        final Long result;
-        if (edge == null) {
-            result = null;
-        } else {
-            result =  h3Core.getDestinationH3IndexFromUnidirectionalEdge(edge);
-        }
-        return result;
+        return (edge == null) ? null : h3Core.getDestinationH3IndexFromUnidirectionalEdge(edge);
     }
+
+  
     /** Returns the destination hexagon from the unidirectional edge address. */
     public String get_destination_h3_index_from_unidirectional_edge(String edgeAddress){
         final String result;
@@ -905,58 +889,68 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         return result;
     }
 
-    /** Provides all of the unidirectional edges from the current H3Index. */
-    public List<Long> get_h3_unidirectional_edges_from_hexagon(Long h3){
+    /** Returns origin and destination hexagons from a unidrectional edge. 
+     * @param edge the unidirectional edge
+     * @return list of two elements , the first one is the origin, and the second one is the destination.
+     */
+    public List<Long> get_origin_destination_h3_index_from_unidirectional_edge(Long edge) {
         final List<Long> result;
-        if (h3 == null) {
+        if (edge == null) {
             result = null;
         } else {
-            result =  h3Core.getH3UnidirectionalEdgesFromHexagon(h3);
+            result = List.of(get_origin_h3_index_from_unidirectional_edge(edge),
+                                        get_destination_h3_index_from_unidirectional_edge(edge));
+        };
+        return result;
+    }
+
+    /** Returns origin and destination hexagons from a unidrectional edge. 
+     * @param edge the unidirectional edge
+     * @return array of two elements , the first one is the origin, and the second one is the destination.
+     */
+    public List<String> get_origin_destination_h3_index_from_unidirectional_edge(String edge) {
+        final List<String> result;
+        if (edge == null) {
+            result = null;
+        } else {
+            result=List.of(get_origin_h3_index_from_unidirectional_edge(edge),
+                           get_destination_h3_index_from_unidirectional_edge(edge));
+                    
         }
         return result;
+    }
+
+
+    /** Provides all of the unidirectional edges from the current H3Index. */
+    public List<Long> get_h3_unidirectional_edges_from_hexagon(Long h3){
+        return (h3 == null) ? null : h3Core.getH3UnidirectionalEdgesFromHexagon(h3);
     }
     
 
     /** Provides all of the unidirectional edges from the current H3 address. */
     public List<String> get_h3_unidirectional_edges_from_hexagon(String h3){
-        final List<String> result;
-        if (h3 == null) {
-            result = null;
-        } else {
-            result =  h3Core.getH3UnidirectionalEdgesFromHexagon(h3);
-        }
-        return result;
+        return (h3 == null) ? null : h3Core.getH3UnidirectionalEdgesFromHexagon(h3);
     }
 
 
-    /** Provides all of the unidirectional edges from the current H3Index. 
+    /** Get the vertices of a given edge as a list of WKT oints
+     *  @param edge an edge
+     *  @return all points 
      *  It returns the WKT Points.
      */
     public List<String> get_h3_unidirectional_edge_boundary(Long edge){
-        final List<String> result;
-        if (edge == null) {
-            result = null;
-        } else {
-            result = h3Core.getH3UnidirectionalEdgeBoundary(edge).stream()
-                           .map(H3AthenaHandler::wktPoint)
-                           .collect(Collectors.toList());
-        }
-        return result;
+        return (edge == null) ?  null : h3Core.getH3UnidirectionalEdgeBoundary(edge).stream()
+                                               .map(H3AthenaHandler::wktPoint)
+                                               .collect(Collectors.toList());
     }
 
     /** Provides all of the unidirectional edges from the current H3Index. 
      *  It returns the WKT Points.
      */
     public List<String> get_h3_unidirectional_edge_boundary(String edgeAddress){
-        final List<String> result;
-        if (edgeAddress == null) {
-            result = null;
-        } else{
-            result = h3Core.getH3UnidirectionalEdgeBoundary(edgeAddress).stream()
-                           .map(H3AthenaHandler::wktPoint)
-                           .collect(Collectors.toList());
-        }
-        return result;
+        return (edgeAddress == null) ? null : h3Core.getH3UnidirectionalEdgeBoundary(edgeAddress).stream()
+                                                    .map(H3AthenaHandler::wktPoint)
+                                                    .collect(Collectors.toList());
     }
 
 
