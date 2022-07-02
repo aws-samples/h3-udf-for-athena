@@ -448,12 +448,17 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
      *   @param end the h3 index of end of the line.
      *   @return the h3 indexes. 
      */  
-    public List<Long> h3_line(Long start, Long end)  throws LineUndefinedException{
+    public List<Long> h3_line(Long start, Long end) {
         List<Long> result;
         if (start == null || end == null) {
             result =  null;
         } else {
-            result = h3Core.h3Line(start, end);
+            try {
+                result = h3Core.h3Line(start, end);
+            } catch (LineUndefinedException e) {
+                e.printStackTrace();
+                result = null;
+            }
         }
         return result;
 
@@ -464,13 +469,17 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
      *   @param end the h3 address of end of the line.
      *   @return the h3 addresses 
      */
-    public List<String> h3_line(String startAddress, String endAddress) throws LineUndefinedException {
+    public List<String> h3_line(String startAddress, String endAddress)  {
         List<String> result;
         if (startAddress == null || endAddress == null) {
             result = null;
         }
         else {
-            result = h3Core.h3Line(startAddress, endAddress);
+            try {
+                result = h3Core.h3Line(startAddress, endAddress);
+            } catch (LineUndefinedException e) {
+                result = null;
+            }
         }
         return result;
     }
@@ -520,13 +529,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
       * @return parent index containing h or null when h3 is null.
       */
     public Long h3_direct_parent(Long h) {
-        final Long result;
-        if (h == null) {
-            result = null;
-        } else {
-            result =  h3Core.h3ToParent(h, h3Core.h3GetResolution(h) - 1);
-        }
-        return result;
+        return h == null ? null : h3Core.h3ToParent(h, h3Core.h3GetResolution(h) - 1);
     }
 
     /** Returns the parent (coarser) index containing h.
@@ -535,14 +538,27 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
       * @return parent index containing h or null when h3 is null.
       */
     public Long h3_to_parent(Long h3, Integer parentRes) {
-        final Long result;
-        if (h3 == null || parentRes == null) {
+        return h3 == null || parentRes == null ? null : h3Core.h3ToParent(h3, parentRes);
+    }
+
+    /** Returns all the parents up to resolution 0. 
+      * @param h3 the h3 index.
+      * @return parent index containing h or null when h3 is null.
+      */
+    public List<Long> h3_to_parents(Long h3) {
+        final List<Long> result;
+        if (h3 == null) {
             result = null;
-        } else {
-            result =  h3Core.h3ToParent(h3, parentRes);
+        }
+        else {
+            result = new LinkedList<>();
+            for (int res = h3Core.h3GetResolution(h3) - 1; res >= 0 ; --res) {
+                result.add(h3Core.h3ToParent(h3, res));
+            }
         }
         return result;
     }
+
 
     /** Returns the parent (coarser) index containing h3Address. 
      *  @param h3Address the h3 address of an h3 cell.
@@ -556,6 +572,24 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
             result = null;
         } else {
             result = h3Core.h3ToParentAddress(h3Address, parentRes);
+        }
+        return result;
+    }
+
+    /** Returns all the parents up to resolution 0. 
+      * @param h3Address the h3 address.
+      * @return parent index containing h or null when h3 is null.
+      */
+    public List<String> h3_to_parents(String h3Address) {
+        final List<String> result;
+        if (h3Address == null) {
+            result = null;
+        }
+        else {
+            result = new LinkedList<>();
+            for (int res = h3Core.h3GetResolution(h3Address) - 1; res >= 0 ; --res) {
+                result.add(h3Core.h3ToParentAddress(h3Address, res));
+            }
         }
         return result;
     }
@@ -575,7 +609,28 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
      *  @return the h3 indexes of the children
      */
     public List<Long> h3_to_children(Long h3, Integer childRes) {
-        return h3 == null ? null : h3Core.h3ToChildren(h3, childRes);
+        return h3 == null  || childRes == null ? null : h3Core.h3ToChildren(h3, childRes);
+    }
+
+    /** Populates descendants with the indexes contained by h at resolution lower than
+     *  resolution of h until resolution of h + depth. 
+     *  @param h3 the h3 index
+     *  @param depth the depth of descendants in term of resolution.
+     *  @return the h3 indexes of the children
+     */
+    public List<Long> h3_to_descendants(Long h3, Integer depth) {
+        final List<Long> result;
+
+        if (h3 == null || depth == null || depth <= 0) {
+            result = null;
+        }  else {
+            int resolution = h3Core.h3GetResolution(h3);
+            result = new LinkedList<>();
+            for (int i = 1; i <= depth; ++i) {
+                result.addAll(h3_to_children(h3, resolution + i));
+            }
+        }
+        return result;
     }
 
     /** Populates children with the indexes contained by h at resolution childRes. 

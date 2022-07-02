@@ -331,6 +331,81 @@ public class H3AthenaHandlerTest
 
     } 
 
+    public void testh3_line() throws Exception {
+        final double latitude = 52.0;
+        final double longitude = -4.3;
+
+        for (int res = 2; res < 16; ++res) {
+        
+            final Long h3 = handler.geo_to_h3(latitude, longitude, res);
+            final String h3Address = handler.geo_to_h3_address(latitude, longitude, res);
+
+            for (Long index : handler.k_ring(h3, 5)) {
+                final List<Long> line = handler.h3_line(h3, index);
+                final List<Long> lineAddr = handler.h3_line(h3, index);
+
+                assertEquals(line.get(0), h3);
+                assertEquals(line.get(line.size() -1), index);
+                
+                for (int i = 0; i < line.size(); ++i) {
+                    assertEquals(i, handler.h3_distance(h3, line.get(i)));
+                    assertEquals(i, handler.h3_distance(h3, lineAddr.get(i)));
+                }
+            }
+        }
+        assertNull(handler.h3_line(handler.geo_to_h3(latitude, longitude, 5), null));
+        assertNull(handler.h3_line((Long)null, handler.geo_to_h3(latitude, longitude, 3)));
+        assertNull(handler.h3_line((String)null, handler.geo_to_h3_address(latitude, longitude, 3)));
+
+    }
+
+    public void testh3_parent() {
+        final double latitude = 52.0;
+        final double longitude = -4.3;
+
+        final int res = 14;
+        final Long h3 = handler.geo_to_h3(latitude, longitude, res);
+        final List<Long> parents = handler.h3_to_parents(h3);
+
+        assertEquals(res, parents.size());
+
+        for (int i = 0; i < res; ++i) {
+            assertEquals(res - i - 1, handler.h3_get_resolution(parents.get(i)));
+        }
+
+        final Long directParent = handler.h3_direct_parent(h3);
+        assertEquals(handler.h3_get_resolution(h3) -1, 
+                     handler.h3_get_resolution(directParent));
+
+    }
+
+    public void testh3_descendants() {
+        final double latitude = 52.0;
+        final double longitude = -4.3;
+
+        final int res = 5;
+        final Long h3 = handler.geo_to_h3(latitude, longitude, res);
+        
+        for (int childRes = res + 1; childRes < res + 5; ++childRes) {
+            for (Long c : handler.h3_to_children(h3, childRes)) {
+                assertEquals(handler.h3_get_resolution(c), childRes);
+                assertEquals(h3, handler.h3_to_parent(c, res));
+            }
+        }
+
+        for (Long desc : handler.h3_to_descendants(h3, 5)) {
+            assertTrue(handler.h3_get_resolution(desc) > res &&
+                      handler.h3_get_resolution(desc) <= res + 5);
+        }
+
+
+    }
+
+
+
+
+
+
     /** Tests h3_to_geo_boundary functions as well as h3_to_geo_boundary_sys. */
     public void testh3_to_geo_boundary() {
 
