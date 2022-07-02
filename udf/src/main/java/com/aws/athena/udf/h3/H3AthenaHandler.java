@@ -448,16 +448,12 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
      *   @param end the h3 index of end of the line.
      *   @return the h3 indexes. 
      */  
-    public List<Long> h3_line(Long start, Long end)  {
+    public List<Long> h3_line(Long start, Long end)  throws LineUndefinedException{
         List<Long> result;
         if (start == null || end == null) {
             result =  null;
         } else {
-            try{
-                result = h3Core.h3Line(start, end);
-            } catch (LineUndefinedException e) {
-                result = null;
-            }
+            result = h3Core.h3Line(start, end);
         }
         return result;
 
@@ -474,11 +470,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
             result = null;
         }
         else {
-            try{
-                result = h3Core.h3Line(startAddress, endAddress);
-            } catch (LineUndefinedException e) {
-                result = null;
-            }
+            result = h3Core.h3Line(startAddress, endAddress);
         }
         return result;
     }
