@@ -379,12 +379,69 @@ public class H3AthenaHandlerTest
 
     }
 
+
+    public void testh3_to_center_child() {
+        final double latitude = 52.0;
+        final double longitude = -4.3;
+
+        final int res = 5;
+        final Long h3 = handler.geo_to_h3(latitude, longitude, res);
+        final String h3Address = handler.geo_to_h3_address(latitude, longitude, res);
+
+        assertNull(handler.h3_to_center_child((Long)null, res + 1));
+        assertNull(handler.h3_to_center_child((String)null, res + 1));
+        assertNull(handler.h3_to_center_child(h3, null));
+        assertNull(handler.h3_to_center_child(h3Address, null));
+
+        assertEquals(h3Core.h3ToCenterChild(h3, res + 1),
+                    handler.h3_to_center_child(h3, res + 1));
+        assertEquals(h3Core.h3ToCenterChild(h3Address, res + 1),
+                    handler.h3_to_center_child(h3Address, res + 1));
+
+    }
+
+    public void testcompact_uncompact() {
+        final double latitude = 52.0;
+        final double longitude = -4.3;
+
+        assertNull(handler.compact(null));
+        assertNull(handler.compact_address(null));
+        assertNull(handler.uncompact(null, 4));
+        assertNull(handler.uncompact_address(null, 4));
+
+        final int neighborhood = 4;
+
+        for (int res = 5; res <= 10; ++res) {
+
+            final Long h3 = handler.geo_to_h3(latitude, longitude, res);
+            final List<Long> h3List  = handler.k_ring(h3, neighborhood);
+
+            final String h3Address = handler.geo_to_h3_address(latitude, longitude, res);
+            final List<String> h3Addresses  = handler.k_ring(h3Address, neighborhood);
+
+            final List<Long> compacted = h3Core.compact(h3List);
+            final List<String> compactedAddress = h3Core.compactAddress(h3Addresses);
+
+            assertEquals(compacted, handler.compact(h3List));
+            assertEquals(compactedAddress, h3Core.compactAddress(h3Addresses));
+
+            assertEquals(h3Core.uncompact(compacted, res + 3), 
+                            handler.uncompact(compacted, res + 3 ));
+            assertEquals(h3Core.uncompactAddress(compactedAddress, res + 3), 
+                            handler.uncompact_address(compactedAddress, res + 3));
+            
+
+        }
+
+    }
+
     public void testh3_descendants() {
         final double latitude = 52.0;
         final double longitude = -4.3;
 
         final int res = 5;
         final Long h3 = handler.geo_to_h3(latitude, longitude, res);
+        final String h3Address = handler.geo_to_h3_address(latitude, longitude, res);
         
         for (int childRes = res + 1; childRes < res + 5; ++childRes) {
             for (Long c : handler.h3_to_children(h3, childRes)) {
@@ -393,7 +450,19 @@ public class H3AthenaHandlerTest
             }
         }
 
+        for (int childRes = res + 1; childRes < res + 5; ++childRes) {
+            for (String c : handler.h3_to_children(h3Address, childRes)) {
+                assertEquals(handler.h3_get_resolution(c), childRes);
+                assertEquals(h3Address, handler.h3_to_parent(c, res));
+            }
+        }
+
         for (Long desc : handler.h3_to_descendants(h3, 5)) {
+            assertTrue(handler.h3_get_resolution(desc) > res &&
+                      handler.h3_get_resolution(desc) <= res + 5);
+        }
+
+        for (String desc : handler.h3_to_descendants(h3Address, 5)) {
             assertTrue(handler.h3_get_resolution(desc) > res &&
                       handler.h3_get_resolution(desc) <= res + 5);
         }
@@ -584,6 +653,4 @@ public class H3AthenaHandlerTest
         assertEquals(2, polygon2Split.length);
         
     }
-
-
 }

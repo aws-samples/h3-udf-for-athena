@@ -1,6 +1,5 @@
 package com.aws.athena.udf.h3;
 
-
 import com.amazonaws.athena.connector.lambda.handlers.UserDefinedFunctionHandler;
 import com.uber.h3core.AreaUnit;
 import com.uber.h3core.H3Core;
@@ -624,10 +623,31 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         if (h3 == null || depth == null || depth <= 0) {
             result = null;
         }  else {
-            int resolution = h3Core.h3GetResolution(h3);
+            final int resolution = h3Core.h3GetResolution(h3);
             result = new LinkedList<>();
             for (int i = 1; i <= depth; ++i) {
                 result.addAll(h3_to_children(h3, resolution + i));
+            }
+        }
+        return result;
+    }
+
+    /** Populates descendants with the indexes contained by h at resolution lower than
+     *  resolution of h until resolution of h + depth. 
+     *  @param h3Address the h3 address
+     *  @param depth the depth of descendants in term of resolution.
+     *  @return the h3 indexes of the children
+     */
+    public List<String> h3_to_descendants(String h3Address, Integer depth) {
+        final List<String> result;
+
+        if (h3Address == null || depth == null || depth <= 0) {
+            result = null;
+        }  else {
+            final int resolution = h3Core.h3GetResolution(h3Address);
+            result = new LinkedList<>();
+            for (int i = 1; i <= depth; ++i) {
+                result.addAll(h3Core.h3ToChildren(h3Address, resolution + i));
             }
         }
         return result;
@@ -650,6 +670,39 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
     public Long h3_to_center_child(Long h3, Integer childRes){
         return h3 == null || childRes == null ? null :  h3Core.h3ToCenterChild(h3, childRes);
     }
+
+    public List<Long> h3_to_center_descendants(Long h3, Integer depth) {
+        final List<Long> result;
+
+        if (h3 == null || depth == null) {
+            result = null;
+        } else {
+            result = new LinkedList<>();
+            for (int i = 1; i <= depth; ++i) {
+                result.add(h3Core.h3ToCenterChild(
+                                h3, 
+                                h3Core.h3GetResolution(h3) + i));
+            }
+        }
+        return result;
+    }
+
+    public List<String> h3_to_center_descendants(String h3Address, Integer depth) {
+        final List<String> result;
+
+        if (h3Address == null || depth == null) {
+            result = null;
+        } else {
+            result = new LinkedList<>();
+            for (int i = 1; i <= depth; ++i) {
+                result.add(h3Core.h3ToCenterChild(
+                                h3Address, 
+                                h3Core.h3GetResolution(h3Address) + i));
+            }
+        }
+        return result;
+    }
+
  
     /** Returns the center child (finer) index contained by h at resolution childRes.
      * @param h3 the h3 index
@@ -841,7 +894,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
 
     /** Gets a multipolygon WKT given an h3 set. 
      *  @param h3 h3 set.
-     *  @param geoJson whether to return in geoJSon format
+     *  @param geoJson whether to return in geoJSon format.
      *  @return WKT Polygon
      */
     public String h3_address_set_to_multipolygon(List<String> h3Addresses, Boolean geoJson) {
