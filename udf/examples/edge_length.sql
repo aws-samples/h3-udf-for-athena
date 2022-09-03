@@ -1,4 +1,0 @@
-USING EXTERNAL FUNCTION edge_length(h3 INT, unit VARCHAR) 
-RETURNS DOUBLE
-LAMBDA '<ARN>'
-SELECT edge_length(1, 'km')
