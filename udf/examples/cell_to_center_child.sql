@@ -1,0 +1,4 @@
+USING EXTERNAL FUNCTION cell_to_center_child(h3 BIGINT, childres INT) 
+RETURNS BIGINT
+LAMBDA '<ARN>'
+SELECT cell_to_center_child(595485172502102015, 5) AS cell

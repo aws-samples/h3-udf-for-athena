@@ -1,4 +1,0 @@
-USING EXTERNAL FUNCTION h3_indexes_are_neighbors(origin BIGINT, destination BIGINT)
-RETURNS BOOLEAN
-LAMBDA '<ARN>'
-SELECT h3_indexes_are_neighbors(622506764664504319, 622506764662964223) 

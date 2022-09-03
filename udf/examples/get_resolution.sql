@@ -1,0 +1,4 @@
+USING EXTERNAL FUNCTION get_resolution(h3 BIGINT) 
+RETURNS INT 
+LAMBDA '<ARN>'
+SELECT get_resolution(613499565412188159) AS resolution

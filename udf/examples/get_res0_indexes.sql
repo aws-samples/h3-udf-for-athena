@@ -1,4 +1,0 @@
-USING EXTERNAL FUNCTION get_res0_indexes(dummy INT) 
-RETURNS ARRAY(BIGINT)
-LAMBDA '<ARN>'
-SELECT get_res0_indexes(5)

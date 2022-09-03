@@ -1,0 +1,4 @@
+USING EXTERNAL FUNCTION grid_distance(start VARCHAR, en VARCHAR)
+RETURNS BIGINT
+LAMBDA '<ARN>'
+SELECT grid_distance('883969ab23fffff', '8839681887fffff') 

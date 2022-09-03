@@ -1,0 +1,8 @@
+USING EXTERNAL FUNCTION compact_cell_addresses(h3array ARRAY(VARCHAR))
+RETURNS ARRAY(VARCHAR)
+LAMBDA '<ARN>'
+SELECT compact_cell_addresses(h3cells) FROM (
+USING EXTERNAL FUNCTION grid_disk(origin VARCHAR, k INT) 
+RETURNS ARRAY(VARCHAR) 
+LAMBDA '<ARN>'
+SELECT grid_disk('8a3969ab2037fff', 10) AS h3cells)

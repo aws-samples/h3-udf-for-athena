@@ -1,5 +1,0 @@
-
-USING EXTERNAL FUNCTION h3_get_faces(h3 VARCHAR) 
-RETURNS ARRAY(INT) 
-LAMBDA '<ARN>'
-SELECT h3_get_faces('81397ffffffffff')

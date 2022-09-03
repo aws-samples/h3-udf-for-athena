@@ -1,0 +1,4 @@
+USING EXTERNAL FUNCTION lat_lng_to_cell(lat DOUBLE, lng DOUBLE, res INT) 
+RETURNS BIGINT 
+LAMBDA '<ARN>'
+SELECT lat_lng_to_cell(43.552847, 7.017369, 10) AS cell

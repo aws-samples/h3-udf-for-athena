@@ -1,0 +1,5 @@
+USING EXTERNAL FUNCTION grid_ring_unsafe(origin BIGINT, k INT) 
+RETURNS ARRAY(BIGINT) 
+LAMBDA '<ARN>'
+SELECT grid_ring_unsafe(581975902628347903, 1) AS hexring
+
