@@ -1172,7 +1172,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
     }
 
     private static String wktPoint(LatLng coord) {
-        return String.format("POINT (%f %f)", coord.lat, coord.lng);
+        return String.format("POINT (%f %f)", coord.lng, coord.lat);
     }
 
     private static LatLng geoCoordFromWKTPoint(String wktPoint) {
@@ -1182,7 +1182,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
             final String inParentheses = trimmed.substring(5, trimmed.length()).trim();
             if ( inParentheses.charAt(0) == '(' && inParentheses.charAt(inParentheses.length()-1) == ')' ){
                 final String[] splitted = inParentheses.substring(1, inParentheses.length()-1).split("\\s+");
-                return new LatLng(Double.parseDouble(splitted[0]), Double.parseDouble(splitted[1]));
+                return new LatLng(Double.parseDouble(splitted[1]), Double.parseDouble(splitted[0]));
             }
             else {
                 throw new IllegalArgumentException("Cannot find parentheses in String" + wktPoint);
