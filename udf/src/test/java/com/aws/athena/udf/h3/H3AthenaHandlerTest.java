@@ -248,14 +248,14 @@ public class H3AthenaHandlerTest
         }
     }
 
-    public void testh3_to_geo_wkt() {
+    public void testcell_to_lat_lng_wkt() {
         assertNull(handler.cell_to_lat_lng_wkt((Long)null));
 
         final double latitude = 50.0;
         final double longitude = -43;
         final Long h3 = handler.lat_lng_to_cell(latitude, longitude, 4);
 
-        assertEquals(handler.cell_to_lat_lng_wkt(h3), "POINT (50.166306 -42.941921)");
+        assertEquals(handler.cell_to_lat_lng_wkt(h3), "POINT (-42.941921 50.166306)");
     }
 
     /** Tests get_resolution functions. */
@@ -316,12 +316,12 @@ public class H3AthenaHandlerTest
         final Long h3 = handler.lat_lng_to_cell(latitude, longitude, 4);
         final Long h3Address = handler.lat_lng_to_cell(latitude, longitude, 4);
 
-        final String[] boundaries = { "POINT (50.388228 -43.038419)", 
-          "POINT (50.211244 -43.296298)", 
-          "POINT (49.989297 -43.199289)", 
-          "POINT (49.943733 -42.846071)", 
-          "POINT (50.120176 -42.587347)", 
-          "POINT (50.342723 -42.682672)"
+        final String[] boundaries = { "POINT (-43.038419 50.388228)", 
+          "POINT (-43.296298 50.211244)", 
+          "POINT (-43.199289 49.989297)", 
+          "POINT (-42.846071 49.943733)", 
+          "POINT (-42.587347 50.120176)", 
+          "POINT (-42.682672 50.342723)"
         };
 
         assertEquals( Arrays.asList(boundaries), 
