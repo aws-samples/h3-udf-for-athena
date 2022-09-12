@@ -397,7 +397,6 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
      *   @return the list of icosahedron faces. Null when h3Address is null.
      */
     public List<Integer> get_icosahedron_faces(String h3Address){
-        final List<Integer> result;
         return h3Address == null ? null : new ArrayList<>(
                                             h3Core.getIcosahedronFaces(h3Address));
    
@@ -1064,7 +1063,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         if (origin == null || h3 == null) {
             result = null;
         } else {
-            CoordIJ coord = h3Core.cellToLocalIj(origin, h3);
+            final CoordIJ coord = h3Core.cellToLocalIj(origin, h3);
             result = new ArrayList<>(Arrays. asList(coord.i, coord.j));
         }
         return result;
@@ -1080,7 +1079,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         if (origin == null || h3 == null) {
             result = null;
         } else {
-            CoordIJ coord = h3Core.cellToLocalIj(origin, h3);
+            final CoordIJ coord = h3Core.cellToLocalIj(origin, h3);
             result = new ArrayList<>(Arrays. asList(coord.i, coord.j));
         }
         return result;
@@ -1166,30 +1165,7 @@ public class H3AthenaHandler extends UserDefinedFunctionHandler {
         return String.format("%f%s%f", geoCoord.lat, sep, geoCoord.lng);
     }
 
-
-    private static List<Double> pointsList(LatLng geoCoord) {
-        return new ArrayList<Double>(Arrays. asList(geoCoord.lat, geoCoord.lng));
-    }
-
     private static String wktPoint(LatLng coord) {
         return String.format("POINT (%f %f)", coord.lng, coord.lat);
-    }
-
-    private static LatLng geoCoordFromWKTPoint(String wktPoint) {
-        
-        final String trimmed = wktPoint.trim();
-        if (trimmed.startsWith("POINT")) {
-            final String inParentheses = trimmed.substring(5, trimmed.length()).trim();
-            if ( inParentheses.charAt(0) == '(' && inParentheses.charAt(inParentheses.length()-1) == ')' ){
-                final String[] splitted = inParentheses.substring(1, inParentheses.length()-1).split("\\s+");
-                return new LatLng(Double.parseDouble(splitted[1]), Double.parseDouble(splitted[0]));
-            }
-            else {
-                throw new IllegalArgumentException("Cannot find parentheses in String" + wktPoint);
-            }
-        }
-        else {
-            throw new IllegalArgumentException("Cannot find POINT" + wktPoint);
-        }
     }
 }
